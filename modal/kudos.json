@@ -1,0 +1,75 @@
+{
+    "type": "modal",
+    "title": {
+      "type": "plain_text",
+      "text": "Kudosbot",
+      "emoji": true
+    },
+    "submit": {
+      "type": "plain_text",
+      "text": "Submit",
+      "emoji": true
+    },
+    "close": {
+      "type": "plain_text",
+      "text": "Cancel",
+      "emoji": true
+    },
+    "blocks": [
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "Yay! Let's help you send a kudos 🌸"
+        }
+      },
+      {
+        "type": "input",
+        "block_id": "receivers",
+        "element": {
+          "type": "multi_users_select",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Select users",
+            "emoji": true
+          },
+          "action_id": "id"
+        },
+        "label": {
+          "type": "plain_text",
+          "text": "Who are the ku-do-ers? 👒",
+          "emoji": true
+        }
+      },
+      {
+        "type": "input",
+        "block_id": "custom",
+        "element": {
+          "type": "plain_text_input",
+          "multiline": true,
+          "action_id": "message"
+        },
+        "label": {
+          "type": "plain_text",
+          "text": "Appreciate them here 💚",
+          "emoji": true
+        }
+      },
+      {
+        "type": "input",
+        "block_id": "channel",
+        "label": {
+          "type": "plain_text",
+          "text": "Where should I post this?"
+        },
+        "element": {
+          "action_id": "id",
+          "type": "channels_select",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Select a channel"
+          }
+        }
+      }
+    ]
+  }
