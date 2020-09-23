@@ -4,6 +4,7 @@ from slack import WebClient
 import json
 from typing import Any, Dict
 import random
+import re
 
 import config
 
@@ -19,7 +20,8 @@ def get_slack_client():
 
 @app.post("/direct")
 async def post_kudos(request: Request):
-    # try:
+    try:
+
         body = await request.form()
         data = json.loads(body['payload'])
 
@@ -29,23 +31,27 @@ async def post_kudos(request: Request):
         users = [ "<@" + user + ">" for user in values['receivers']['id']["selected_users"] ]
         sender = data['user']
 
-        print(message)
+        client = get_slack_client()
+
+        try:
+            response = client.conversations_join(channel=channel_id)
+        except Exception as e:
+            print(str(e))
 
         payload = "\n\n Hi " + " ".join(users) + " :wave:\nYou've just been kudo-ed by <@" + sender['id'] + "> :clap:\
-            \n_" + message + "_ :cherry_blossom:\nSay thank you now! :cake:"
+            \n\"_" + message + "_\" :cherry_blossom:\nSay thank you now! :cake:"
 
-        client = get_slack_client()
         client.chat_postMessage(text=payload, channel=channel_id)
 
 
         return Response(status_code=200)
 
-    # except Exception as e:
-    #     print(str(e))
-    #     return {
-    #         "response_type": "ephemeral",
-    #         "text": "💩 Poopknuckels! Something just went haywire. Please try again!"
-    #     }
+    except Exception as e:
+        print(str(e))
+        return {
+            "response_type": "ephemeral",
+            "text": "💩 Poopknuckels! Something just went haywire. Please try again!"
+        }
 
 @app.post("/modal")
 async def post_modal(request: Request):
