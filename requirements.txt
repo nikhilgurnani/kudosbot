@@ -12,6 +12,7 @@ pydantic==1.6.1
 python-dotenv==0.15.0
 python-multipart==0.0.5
 six==1.15.0
+slack-bolt==1.1.2
 slack-sdk==3.1.0
 slackclient==2.8.1
 starlette==0.13.6
