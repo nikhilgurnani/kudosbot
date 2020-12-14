@@ -1,5 +1,6 @@
 {
     "type": "modal",
+    "callback_id": "kudos_modal",
     "title": {
       "type": "plain_text",
       "text": "Kudosbot",
