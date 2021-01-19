@@ -25,13 +25,6 @@ app = FastAPI()
 def get_settings():
     return config.Settings()
 
-# oauth_settings = AsyncOAuthSettings(
-#     client_id=get_settings().slack_client_id,
-#     client_secret=get_settings().slack_client_secret,
-#     scopes=get_settings().slack_scopes.split(','),
-#     installation_store=SQLite3InstallationStore(client_id=get_settings().slack_client_id,database='./slackapp.db'),
-#     state_store=SQLite3OAuthStateStore(expiration_seconds=600, database='./slackapp.db'),
-# )
 oauth_flow = AsyncOAuthFlow.sqlite3(
     client_id=get_settings().slack_client_id,
     client_secret=get_settings().slack_client_secret,
@@ -58,10 +51,15 @@ async def handle_message():
 
 @slack_app.command("/kudos")
 async def command(ack, body, client):
-    await ack()
-    with open('./modal/kudos.json') as f:
+    print(get_settings().slack_scopes)
+    if body.get('text', None) == "help":
+        await ack(f'To use Kudosbot, just type in /kudos and press enter in any chat.');
+        return
+    else:
+        await ack()
+        with open('./modal/kudos.json') as f:
             data = json.load(f)
-    await client.views_open(trigger_id=body['trigger_id'], view=data)
+        await client.views_open(trigger_id=body['trigger_id'], view=data)
 
 @slack_app.view('kudos_modal')
 async def handle_kudos_submission(ack, body, client, logger):
@@ -73,24 +71,33 @@ async def handle_kudos_submission(ack, body, client, logger):
     users = [ "<@" + user + ">" for user in values['receivers']['id']["selected_users"] ]
     sender = data['user']
 
-    try:
-        await client.conversations_join(channel=channel_id)
-    except Exception as e:
-        logger.error(str(e))
-        await ack(response_action="errors", errors=[str(e)])
-        return
-
     await ack()
-    payload = "\n\n Hi " \
-                + " ".join(users) \
-                + " :wave:\nYou've just been kudo-ed by <@"\
-                + sender['id'] \
-                + "> :clap:\n\"_" \
-                + message \
-                + "_\" :cherry_blossom:\nSay thank you now! :cake:"
-
+    new_payload =  [
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Hello, " + " ".join(users) + "! You've gotten a kudos :cherry_blossom:"
+            }
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*<@" + sender['id'] + ">*\n" + message + ""
+            },
+        },
+        {
+			"type": "image",
+			"image_url": "https://media.giphy.com/media/3oz8xEw5k7ae09nFFm/giphy.gif",
+			"alt_text": "yayy"
+		}
+    ]
     try :
-        await client.chat_postMessage(text=payload, channel=channel_id)
+        await client.chat_postMessage(blocks=new_payload, channel=channel_id)
         payload = "Hello Kudo-er! Your kudos has been delivered. " + success_responses[random.randint(0,len(success_responses)-1)]
     except Exception as e:
         payload = error_responses[random.randint(0, len(error_responses)-1)]
