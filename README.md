@@ -1,6 +1,6 @@
 
 # Kudosbot
-> A slack app that sends kudos to your team mates.
+A slack app that sends kudos to your team mates.
 
 Do you want to praise someone but without having an unnecessary conversation around it? Well, Kudosbot can help you. Kudosbot is a slack application that sends a kudos to your teammates as a token for appreciation for a job well done. Simple.
 
